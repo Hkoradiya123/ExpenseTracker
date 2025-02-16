@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="blue">#3F51B5</color>
+    <color name="cyan">#00BCD4</color>
+    <color name="toolbar_color">#3F51B5</color>
+    <color name="nav_header">#3F51B5</color>
+    <color name="purple_500">#9C27B0</color>
+    <color name="purple_700">#512DA8</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="gray">#E0E0E0</color>
+    <color name="primary">#6200EE</color>
+    <!-- Primary Theme Colors -->
+    <color name="primaryDark">#3700B3</color>
+    <color name="accent">#03DAC5</color>
+
+    <!-- Background Colors -->
+    <color name="dialogBackground">#333333</color> <!-- Dark Gray for Dialog -->
+
+
+    <!-- Button Colors -->
+    <color name="buttonGray">#B0B0B0</color>
+</resources>
