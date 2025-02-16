@@ -52,7 +52,9 @@ dependencies {
 
     // Import the Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
-
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0")) // Firebase BOM
+    implementation("com.google.firebase:firebase-firestore") // Firestore
+    implementation("com.google.firebase:firebase-auth") // Firebase Authentication
 
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies

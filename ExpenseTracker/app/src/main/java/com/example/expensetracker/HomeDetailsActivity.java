@@ -1,7 +1,6 @@
 package com.example.expensetracker;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,10 +11,17 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.*;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HomeDetailsActivity extends AppCompatActivity {
 
@@ -24,7 +30,9 @@ public class HomeDetailsActivity extends AppCompatActivity {
     TextView headerText;
     ArrayList<String> customers;
     ArrayAdapter<String> adapter;
-    DatabaseHelper dbHelper;
+    FirebaseFirestore db;
+
+    FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,23 +43,18 @@ public class HomeDetailsActivity extends AppCompatActivity {
         customerListView = findViewById(R.id.customerListView);
         addCustomerButton = findViewById(R.id.addCustomerButton);
         headerText = findViewById(R.id.headerText);
-        dbHelper = new DatabaseHelper(this);
 
-        // Add space below title
-        headerText.setPadding(0, 0, 0, 20);
+        // Initialize Firestore
+        db = FirebaseFirestore.getInstance();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        // Load customers from SQLite
-        customers = dbHelper.getAllCustomers();
-
-        // Insert initial data if empty
-        if (customers.isEmpty()) {
-            dbHelper.addCustomer("Rahul", "500");
-            dbHelper.addCustomer("Priya", "1200");
-            dbHelper.addCustomer("Amit", "300");
-            customers = dbHelper.getAllCustomers();
+        if (currentUser == null) {
+            Toast.makeText(this, "User not logged in!", Toast.LENGTH_SHORT).show();
+            finish(); // Close activity if no user is logged in
+            return;
         }
 
-        // Set up adapter
+        customers = new ArrayList<>();
         adapter = new ArrayAdapter<String>(this, R.layout.item_customer, R.id.customerName, customers) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
@@ -60,38 +63,57 @@ public class HomeDetailsActivity extends AppCompatActivity {
                 TextView amountText = view.findViewById(R.id.customerAmount);
 
                 String customerName = customers.get(position);
-                String amount = dbHelper.getCustomerAmount(customerName);
+                getCustomerAmount(customerName, amountText);
 
                 nameText.setText(customerName);
-                amountText.setText("₹" + amount);
-
                 return view;
             }
         };
-
         customerListView.setAdapter(adapter);
 
-        // Add Customer Button Click Listener
+        loadCustomers();
+
         addCustomerButton.setOnClickListener(v -> showAddCustomerDialog());
 
-        // Edit Customer on Click
         customerListView.setOnItemClickListener((parent, view, position, id) -> showEditCustomerDialog(position));
 
-        // Delete Customer on Long Press
         customerListView.setOnItemLongClickListener((parent, view, position, id) -> {
             showDeleteCustomerDialog(position);
             return true;
         });
     }
 
-    private void refreshList() {
-        customers.clear();
-        customers.addAll(dbHelper.getAllCustomers());
-        adapter.notifyDataSetChanged();
+    private void loadCustomers() {
+        String userId = currentUser.getUid();
+
+        db.collection("users").document(userId).collection("customers")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    customers.clear();
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        customers.add(document.getString("name"));
+                    }
+                    adapter.notifyDataSetChanged();
+                })
+                .addOnFailureListener(e -> Toast.makeText(this, "Error loading customers", Toast.LENGTH_SHORT).show());
+    }
+
+    private void getCustomerAmount(String customerName, TextView amountText) {
+        String userId = currentUser.getUid();
+
+        db.collection("users").document(userId).collection("customers")
+                .whereEqualTo("name", customerName)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        DocumentSnapshot doc = queryDocumentSnapshots.getDocuments().get(0);
+                        amountText.setText("₹" + doc.getString("amount"));
+                    }
+                });
     }
 
     private void showAddCustomerDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.dialog_add_customer);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Add New Customer");
 
         View customLayout = getLayoutInflater().inflate(R.layout.dialog_add_customer, null);
@@ -102,28 +124,37 @@ public class HomeDetailsActivity extends AppCompatActivity {
 
         builder.setPositiveButton("Add", (dialog, which) -> {
             String name = nameInput.getText().toString();
-            String amountString = amountInput.getText().toString();
+            String amount = amountInput.getText().toString();
 
-            if (!name.isEmpty() && !amountString.isEmpty()) {
-                try {
-                    int amount = Integer.parseInt(amountString);
-                    dbHelper.addCustomer(name, String.valueOf(amount));
-                    refreshList();
-                } catch (NumberFormatException e) {
-                    Toast.makeText(HomeDetailsActivity.this, "Invalid amount format", Toast.LENGTH_SHORT).show();
-                }
+            if (!name.isEmpty() && !amount.isEmpty()) {
+                addCustomer(name, amount);
             } else {
-                Toast.makeText(HomeDetailsActivity.this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             }
         });
 
         builder.setNegativeButton("Cancel", null);
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        builder.create().show();
+    }
+
+    private void addCustomer(String name, String amount) {
+        String userId = currentUser.getUid();
+
+        Map<String, Object> customer = new HashMap<>();
+        customer.put("name", name);
+        customer.put("amount", amount);
+
+        db.collection("users").document(userId).collection("customers")
+                .add(customer)
+                .addOnSuccessListener(documentReference -> {
+                    customers.add(name);
+                    adapter.notifyDataSetChanged();
+                })
+                .addOnFailureListener(e -> Toast.makeText(this, "Error adding customer", Toast.LENGTH_SHORT).show());
     }
 
     private void showEditCustomerDialog(int position) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomAlertDialog);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Edit Customer");
 
         View customLayout = getLayoutInflater().inflate(R.layout.dialog_edit_customer, null);
@@ -133,26 +164,48 @@ public class HomeDetailsActivity extends AppCompatActivity {
         EditText amountInput = customLayout.findViewById(R.id.customerAmountInput);
 
         String customerName = customers.get(position);
-        String amount = dbHelper.getCustomerAmount(customerName);
-
         nameInput.setText(customerName);
-        amountInput.setText(amount);
+
+        db.collection("users").document(currentUser.getUid()).collection("customers")
+                .whereEqualTo("name", customerName)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        DocumentSnapshot doc = queryDocumentSnapshots.getDocuments().get(0);
+                        amountInput.setText(doc.getString("amount"));
+                    }
+                });
 
         builder.setPositiveButton("Update", (dialog, which) -> {
             String newName = nameInput.getText().toString();
             String newAmount = amountInput.getText().toString();
 
             if (!newName.isEmpty() && !newAmount.isEmpty()) {
-                dbHelper.updateCustomer(customerName, newName, newAmount);
-                refreshList();
+                updateCustomer(customerName, newName, newAmount);
             } else {
-                Toast.makeText(HomeDetailsActivity.this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             }
         });
 
         builder.setNegativeButton("Cancel", null);
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        builder.create().show();
+    }
+
+    private void updateCustomer(String oldName, String newName, String newAmount) {
+        String userId = currentUser.getUid();
+
+        db.collection("users").document(userId).collection("customers")
+                .whereEqualTo("name", oldName)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+                            doc.getReference().update("name", newName, "amount", newAmount);
+                        }
+                        customers.set(customers.indexOf(oldName), newName);
+                        adapter.notifyDataSetChanged();
+                    }
+                });
     }
 
     private void showDeleteCustomerDialog(int position) {
@@ -162,12 +215,27 @@ public class HomeDetailsActivity extends AppCompatActivity {
         builder.setTitle("Delete Customer");
         builder.setMessage("Are you sure you want to delete " + customerName + "?");
 
-        builder.setPositiveButton("Delete", (dialog, which) -> {
-            dbHelper.deleteCustomer(customerName);
-            refreshList();
-        });
-
+        builder.setPositiveButton("Delete", (dialog, which) -> deleteCustomer(customerName));
         builder.setNegativeButton("Cancel", null);
         builder.show();
     }
+
+    private void deleteCustomer(String name) {
+        String userId = currentUser.getUid();
+
+        db.collection("users").document(userId).collection("customers")
+                .whereEqualTo("name", name)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+                            doc.getReference().delete();
+                        }
+                        customers.remove(name);
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+    }
+
+
 }

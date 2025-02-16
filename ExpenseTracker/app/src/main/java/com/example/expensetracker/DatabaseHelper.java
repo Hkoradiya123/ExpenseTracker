@@ -1,96 +1,111 @@
 package com.example.expensetracker;
 
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
+import com.google.firebase.BuildConfig;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-public class DatabaseHelper extends SQLiteOpenHelper {
+public class DatabaseHelper {
 
-    private static final String DATABASE_NAME = "KhataBook.db";
-    private static final int DATABASE_VERSION = 1;
-    private static final String TABLE_CUSTOMERS = "customers";
-    private static final String COLUMN_ID = "id";
-    private static final String COLUMN_NAME = "name";
-    private static final String COLUMN_AMOUNT = "amount";
+    private static final String COLLECTION_USERS = "users";
+    private static final String COLLECTION_CUSTOMERS = "customers";
+    private static final String FIELD_NAME = "name";
+    private static final String FIELD_AMOUNT = "amount";
+    private FirebaseFirestore db;
+    private String userId;
 
-    public DatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
-    }
+    public DatabaseHelper() {
+        db = FirebaseFirestore.getInstance();
+        userId = FirebaseAuth.getInstance().getCurrentUser() != null ?
+                FirebaseAuth.getInstance().getCurrentUser().getUid() : null;
+        FirebaseFirestore db;
 
-    @Override
-    public void onCreate(SQLiteDatabase db) {
-        String createTable = "CREATE TABLE " + TABLE_CUSTOMERS + " ("
-                + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + COLUMN_NAME + " TEXT, "
-                + COLUMN_AMOUNT + " TEXT)";
-        db.execSQL(createTable);
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CUSTOMERS);
-        onCreate(db);
-    }
-
-    // Insert a new customer
-    public void addCustomer(String name, String amount) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_NAME, name);
-        values.put(COLUMN_AMOUNT, amount);
-        db.insert(TABLE_CUSTOMERS, null, values);
-        db.close();
-    }
-
-    public String getCustomerAmount(String name) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT amount FROM customers WHERE name = ?", new String[]{name});
-
-        String amount = "0"; // Default value
-        if (cursor.moveToFirst()) {
-            amount = cursor.getString(0);
+        if (BuildConfig.DEBUG) {
+            db = FirebaseFirestore.getInstance();
+            db.useEmulator("10.0.2.2", 8080);  // Use this for Android Emulator
+        } else {
+            db = FirebaseFirestore.getInstance(); // Use Firestore normally in production
         }
-
-        cursor.close();
-        db.close();
-        return amount;
     }
 
-    // Retrieve all customers in the format "Name - ₹Amount"
-    public ArrayList<String> getAllCustomers() {
-        ArrayList<String> customers = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT name FROM customers", null); // ✅ Fetch only names
-
-        if (cursor.moveToFirst()) {
-            do {
-                customers.add(cursor.getString(0)); // ✅ Store only name
-            } while (cursor.moveToNext());
-        }
-
-        cursor.close();
-        db.close();
-        return customers;
+    private CollectionReference getUserCollection() {
+        return db.collection(COLLECTION_USERS).document(userId).collection(COLLECTION_CUSTOMERS);
     }
 
-    // Update an existing customer (assumes names are unique)
+    // Add customer to Firestore
+
+    public void addCustomerToFirestore(String userId, String name, String amount) {
+        DocumentReference docRef = db.collection("users")
+                .document(userId)
+                .collection("customers")
+                .document(name); // Use customer name as document ID
+
+        Map<String, Object> customer = new HashMap<>();
+        customer.put("name", name);
+        customer.put("amount", amount);
+
+        docRef.set(customer)
+                .addOnSuccessListener(aVoid -> Log.d("Firestore", "Customer added successfully!"))
+                .addOnFailureListener(e -> Log.e("Firestore", "Error adding customer", e));
+    }
+    // Get customer amount by name
+    public void getCustomerAmount(String name, FirestoreCallback<String> callback) {
+        if (userId == null) return;
+        getUserCollection().whereEqualTo(FIELD_NAME, name).get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    String amount = "0";
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        amount = doc.getString(FIELD_AMOUNT);
+                        break;
+                    }
+                    callback.onCallback(amount);
+                });
+    }
+
+    // Retrieve all customer names
+    public void getAllCustomers(FirestoreCallback<ArrayList<String>> callback) {
+        if (userId == null) return;
+        getUserCollection().get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    ArrayList<String> customers = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        customers.add(doc.getString(FIELD_NAME));
+                    }
+                    callback.onCallback(customers);
+                });
+    }
+
+    // Update customer details
     public void updateCustomer(String oldName, String newName, String newAmount) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_NAME, newName);
-        values.put(COLUMN_AMOUNT, newAmount);
-        db.update(TABLE_CUSTOMERS, values, COLUMN_NAME + "=?", new String[]{oldName});
-        db.close();
+        if (userId == null) return;
+        getUserCollection().whereEqualTo(FIELD_NAME, oldName).get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        doc.getReference().update(FIELD_NAME, newName, FIELD_AMOUNT, newAmount);
+                    }
+                });
     }
 
-    // Delete a customer by name
+    // Delete customer by name
     public void deleteCustomer(String name) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_CUSTOMERS, COLUMN_NAME + "=?", new String[]{name});
-        db.close();
+        if (userId == null) return;
+        getUserCollection().whereEqualTo(FIELD_NAME, name).get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        doc.getReference().delete();
+                    }
+                });
+    }
+
+    // Callback interface for Firestore async operations
+    public interface FirestoreCallback<T> {
+        void onCallback(T result);
     }
 }
