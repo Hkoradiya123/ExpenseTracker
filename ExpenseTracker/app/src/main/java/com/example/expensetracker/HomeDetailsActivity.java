@@ -196,7 +196,8 @@ public class HomeDetailsActivity extends AppCompatActivity {
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (!queryDocumentSnapshots.isEmpty()) {
                         DocumentSnapshot doc = queryDocumentSnapshots.getDocuments().get(0);
-                        amountInput.setText(doc.getString("amount"));
+                        String amount = getAmountAsString(doc);
+                        amountInput.setText(amount);
                     }
                 });
 
@@ -213,6 +214,21 @@ public class HomeDetailsActivity extends AppCompatActivity {
 
         builder.setNegativeButton("Cancel", null);
         builder.create().show();
+    }
+
+    // Helper method to safely get the amount as a string
+    private String getAmountAsString(DocumentSnapshot doc) {
+        Object amountObj = doc.get("amount");
+
+        if (amountObj instanceof String) {
+            return (String) amountObj;
+        } else if (amountObj instanceof Double) {
+            return String.format("%.2f", amountObj);
+        } else if (amountObj instanceof Long) {
+            return String.valueOf(amountObj);
+        } else {
+            return "0.00"; // Default value
+        }
     }
 
     private void updateCustomer(String oldName, String newName, String newAmount) {
