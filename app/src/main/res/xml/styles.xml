@@ -1,0 +1,3 @@
+<style name="dialog_add_customer" parent="Theme.AppCompat.Light.Dialog.Alert">
+    <item name="android:background">@drawable/dialog_background</item>
+</style>

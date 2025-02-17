@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">ExpenseTracker</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="customer_list_header">KhataBook - Customer List</string>
+    <string name="add_customer">Add Customer</string>
+    <string name="sample_header">Sample Header</string>
+</resources>

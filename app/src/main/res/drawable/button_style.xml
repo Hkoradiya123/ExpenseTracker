@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners android:radius="20dp"/>  <!-- Rounded corners -->
+    <solid android:color="#6200EE"/>  <!-- Purple background -->
+    <padding android:left="20dp" android:right="20dp" android:top="10dp" android:bottom="10dp"/>
+    <shadowColor android:color="#3700B3"/> <!-- Slight shadow -->
+</shape>
