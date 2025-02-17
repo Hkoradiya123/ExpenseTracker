@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -95,7 +96,10 @@ public class HomeDetailsActivity extends AppCompatActivity {
                     }
                     adapter.notifyDataSetChanged();
                 })
-                .addOnFailureListener(e -> Toast.makeText(this, "Error loading customers", Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error loading customers: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.e("HomeDetailsActivity", "Error loading customers", e); // Log the error for debugging
+                });
     }
 
     private void getCustomerAmount(String customerName, TextView amountText) {
@@ -107,10 +111,27 @@ public class HomeDetailsActivity extends AppCompatActivity {
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (!queryDocumentSnapshots.isEmpty()) {
                         DocumentSnapshot doc = queryDocumentSnapshots.getDocuments().get(0);
-                        amountText.setText("₹" + doc.getString("amount"));
+
+                        // Check if the amount is a String, Double, or Integer
+                        Object amountObj = doc.get("amount");
+
+                        if (amountObj instanceof String) {
+                            amountText.setText("₹" + amountObj.toString());
+                        } else if (amountObj instanceof Double) {
+                            amountText.setText("₹" + String.format("%.2f", amountObj));
+                        } else if (amountObj instanceof Long) {
+                            amountText.setText("₹" + String.valueOf(amountObj));
+                        } else {
+                            amountText.setText("₹0.00");
+                        }
                     }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error loading customer amount", Toast.LENGTH_SHORT).show();
+                    Log.e("HomeDetailsActivity", "Error loading customer amount", e); // Log error details
                 });
     }
+
 
     private void showAddCustomerDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -150,7 +171,10 @@ public class HomeDetailsActivity extends AppCompatActivity {
                     customers.add(name);
                     adapter.notifyDataSetChanged();
                 })
-                .addOnFailureListener(e -> Toast.makeText(this, "Error adding customer", Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error adding customer", Toast.LENGTH_SHORT).show();
+                    Log.e("HomeDetailsActivity", "Error adding customer", e); // Log the error for debugging
+                });
     }
 
     private void showEditCustomerDialog(int position) {
@@ -205,6 +229,10 @@ public class HomeDetailsActivity extends AppCompatActivity {
                         customers.set(customers.indexOf(oldName), newName);
                         adapter.notifyDataSetChanged();
                     }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error updating customer", Toast.LENGTH_SHORT).show();
+                    Log.e("HomeDetailsActivity", "Error updating customer", e); // Log the error for debugging
                 });
     }
 
@@ -234,8 +262,10 @@ public class HomeDetailsActivity extends AppCompatActivity {
                         customers.remove(name);
                         adapter.notifyDataSetChanged();
                     }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error deleting customer", Toast.LENGTH_SHORT).show();
+                    Log.e("HomeDetailsActivity", "Error deleting customer", e); // Log the error for debugging
                 });
     }
-
-
 }
