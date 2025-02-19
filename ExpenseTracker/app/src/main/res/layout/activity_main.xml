@@ -10,80 +10,89 @@
     android:gravity="center"
     tools:context=".MainActivity">
 
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center">
-        
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Log In"
-        android:textColor="@android:color/white"
-        android:textAppearance="?android:textAppearanceLarge"
-        android:gravity="center"
-        />
+        android:layout_height="wrap_content">
 
-        <EditText
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:hint="Email:"
-            android:textColor="@android:color/white"
-            android:textColorHint="@android:color/white"
-            android:background="@drawable/edittext_backgroud"
-            android:padding="15dp"
-            android:id="@+id/email_login"/>
+            android:orientation="vertical"
+            android:gravity="center">
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:hint="Password:"
-            android:textColor="@android:color/white"
-            android:textColorHint="@android:color/white"
-            android:background="@drawable/edittext_backgroud"
-            android:padding="15dp"
-            android:id="@+id/password_login"
-            />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Log In"
+                android:textColor="@android:color/white"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:gravity="center" />
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:background="@drawable/edittext_backgroud"
-            android:text="Log In"
-            android:textColor="@android:color/white"
-            android:padding="15dp"
-            android:id="@+id/btn_login"
-            android:textAppearance="?android:textAppearanceMedium"
-            />
+            <EditText
+                android:id="@+id/email_login"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:hint="Email:"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white"
+                android:background="@drawable/edittext_backgroud"
+                android:padding="15dp" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="@android:color/white"
-            android:id="@+id/forgot_password"
-            android:text="Forgot Password?"
-            android:padding="5dp"
-            />
+            <EditText
+                android:id="@+id/password_login"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:hint="Password:"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white"
+                android:background="@drawable/edittext_backgroud"
+                android:padding="15dp" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textColor="@android:color/white"
-            android:id="@+id/signup_reg"
-            android:text="Dont Have an Account ? Sign up Here"
-            android:padding="5dp"
-            />
-    </LinearLayout>
-</ScrollView>
+            <Button
+                android:id="@+id/btn_login"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/edittext_backgroud"
+                android:text="Log In"
+                android:textColor="@android:color/white"
+                android:padding="15dp"
+                android:textAppearance="?android:textAppearanceMedium" />
 
+            <TextView
+                android:id="@+id/forgot_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                android:text="Forgot Password?"
+                android:padding="5dp" />
+
+            <TextView
+                android:id="@+id/signup_reg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                android:text="Don't Have an Account? Sign up Here"
+                android:padding="5dp" />
+
+<!--            <com.google.android.gms.common.SignInButton-->
+<!--                android:id="@+id/btn_google_signin"-->
+<!--                android:layout_width="166dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_margin="10dp" />-->
+            <Button
+                android:id="@+id/btn_google_signin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sign in with Google"
+                android:layout_centerInParent="true"/>
+
+
+
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

@@ -51,7 +51,7 @@ public class HomeDetailsActivity extends AppCompatActivity {
 
         if (currentUser == null) {
             Toast.makeText(this, "User not logged in!", Toast.LENGTH_SHORT).show();
-            finish(); // Close activity if no user is logged in
+            finish();
             return;
         }
 
@@ -98,7 +98,7 @@ public class HomeDetailsActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Error loading customers: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    Log.e("HomeDetailsActivity", "Error loading customers", e); // Log the error for debugging
+                    Log.e("HomeDetailsActivity", "Error loading customers", e);
                 });
     }
 
@@ -111,27 +111,28 @@ public class HomeDetailsActivity extends AppCompatActivity {
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (!queryDocumentSnapshots.isEmpty()) {
                         DocumentSnapshot doc = queryDocumentSnapshots.getDocuments().get(0);
-
-                        // Check if the amount is a String, Double, or Integer
-                        Object amountObj = doc.get("amount");
-
-                        if (amountObj instanceof String) {
-                            amountText.setText("₹" + amountObj.toString());
-                        } else if (amountObj instanceof Double) {
-                            amountText.setText("₹" + String.format("%.2f", amountObj));
-                        } else if (amountObj instanceof Long) {
-                            amountText.setText("₹" + String.valueOf(amountObj));
-                        } else {
-                            amountText.setText("₹0.00");
-                        }
+                        amountText.setText("₹" + getAmountAsString(doc));
                     }
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Error loading customer amount", Toast.LENGTH_SHORT).show();
-                    Log.e("HomeDetailsActivity", "Error loading customer amount", e); // Log error details
+                    Log.e("HomeDetailsActivity", "Error loading customer amount", e);
                 });
     }
 
+    private String getAmountAsString(DocumentSnapshot doc) {
+        Object amountObj = doc.get("amount");
+
+        if (amountObj instanceof String) {
+            return (String) amountObj;
+        } else if (amountObj instanceof Double) {
+            return String.format("%.2f", (Double) amountObj);
+        } else if (amountObj instanceof Long) {
+            return String.valueOf(amountObj);
+        } else {
+            return "0.00";
+        }
+    }
 
     private void showAddCustomerDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -163,7 +164,7 @@ public class HomeDetailsActivity extends AppCompatActivity {
 
         Map<String, Object> customer = new HashMap<>();
         customer.put("name", name);
-        customer.put("amount", amount);
+        customer.put("amount", Double.parseDouble(amount));
 
         db.collection("users").document(userId).collection("customers")
                 .add(customer)
@@ -173,82 +174,7 @@ public class HomeDetailsActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Error adding customer", Toast.LENGTH_SHORT).show();
-                    Log.e("HomeDetailsActivity", "Error adding customer", e); // Log the error for debugging
-                });
-    }
-
-    private void showEditCustomerDialog(int position) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Edit Customer");
-
-        View customLayout = getLayoutInflater().inflate(R.layout.dialog_edit_customer, null);
-        builder.setView(customLayout);
-
-        EditText nameInput = customLayout.findViewById(R.id.customerNameInput);
-        EditText amountInput = customLayout.findViewById(R.id.customerAmountInput);
-
-        String customerName = customers.get(position);
-        nameInput.setText(customerName);
-
-        db.collection("users").document(currentUser.getUid()).collection("customers")
-                .whereEqualTo("name", customerName)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        DocumentSnapshot doc = queryDocumentSnapshots.getDocuments().get(0);
-                        String amount = getAmountAsString(doc);
-                        amountInput.setText(amount);
-                    }
-                });
-
-        builder.setPositiveButton("Update", (dialog, which) -> {
-            String newName = nameInput.getText().toString();
-            String newAmount = amountInput.getText().toString();
-
-            if (!newName.isEmpty() && !newAmount.isEmpty()) {
-                updateCustomer(customerName, newName, newAmount);
-            } else {
-                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        builder.setNegativeButton("Cancel", null);
-        builder.create().show();
-    }
-
-    // Helper method to safely get the amount as a string
-    private String getAmountAsString(DocumentSnapshot doc) {
-        Object amountObj = doc.get("amount");
-
-        if (amountObj instanceof String) {
-            return (String) amountObj;
-        } else if (amountObj instanceof Double) {
-            return String.format("%.2f", amountObj);
-        } else if (amountObj instanceof Long) {
-            return String.valueOf(amountObj);
-        } else {
-            return "0.00"; // Default value
-        }
-    }
-
-    private void updateCustomer(String oldName, String newName, String newAmount) {
-        String userId = currentUser.getUid();
-
-        db.collection("users").document(userId).collection("customers")
-                .whereEqualTo("name", oldName)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
-                            doc.getReference().update("name", newName, "amount", newAmount);
-                        }
-                        customers.set(customers.indexOf(oldName), newName);
-                        adapter.notifyDataSetChanged();
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error updating customer", Toast.LENGTH_SHORT).show();
-                    Log.e("HomeDetailsActivity", "Error updating customer", e); // Log the error for debugging
+                    Log.e("HomeDetailsActivity", "Error adding customer", e);
                 });
     }
 
@@ -263,6 +189,73 @@ public class HomeDetailsActivity extends AppCompatActivity {
         builder.setNegativeButton("Cancel", null);
         builder.show();
     }
+
+    private void showEditCustomerDialog(int position) {
+        String customerName = customers.get(position);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Edit Customer");
+
+        View customLayout = getLayoutInflater().inflate(R.layout.dialog_add_customer, null);
+        builder.setView(customLayout);
+
+        EditText nameInput = customLayout.findViewById(R.id.customerNameInput);
+        EditText amountInput = customLayout.findViewById(R.id.customerAmountInput);
+
+        nameInput.setText(customerName);
+
+        // Fetch current amount from Firestore
+        String userId = currentUser.getUid();
+        db.collection("users").document(userId).collection("customers")
+                .whereEqualTo("name", customerName)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        DocumentSnapshot doc = queryDocumentSnapshots.getDocuments().get(0);
+                        amountInput.setText(getAmountAsString(doc));
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error loading customer data", Toast.LENGTH_SHORT).show();
+                    Log.e("HomeDetailsActivity", "Error loading customer data", e);
+                });
+
+        builder.setPositiveButton("Save", (dialog, which) -> {
+            String newName = nameInput.getText().toString();
+            String newAmount = amountInput.getText().toString();
+
+            if (!newName.isEmpty() && !newAmount.isEmpty()) {
+                updateCustomer(customerName, newName, newAmount, position);
+            } else {
+                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", null);
+        builder.create().show();
+    }
+
+    private void updateCustomer(String oldName, String newName, String newAmount, int position) {
+        String userId = currentUser.getUid();
+
+        db.collection("users").document(userId).collection("customers")
+                .whereEqualTo("name", oldName)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+                            doc.getReference().update("name", newName, "amount", Double.parseDouble(newAmount));
+                        }
+                        customers.set(position, newName);
+                        adapter.notifyDataSetChanged();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error updating customer", Toast.LENGTH_SHORT).show();
+                    Log.e("HomeDetailsActivity", "Error updating customer", e);
+                });
+    }
+
 
     private void deleteCustomer(String name) {
         String userId = currentUser.getUid();
@@ -281,7 +274,7 @@ public class HomeDetailsActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Error deleting customer", Toast.LENGTH_SHORT).show();
-                    Log.e("HomeDetailsActivity", "Error deleting customer", e); // Log the error for debugging
+                    Log.e("HomeDetailsActivity", "Error deleting customer", e);
                 });
     }
 }

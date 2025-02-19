@@ -5,4 +5,6 @@
     <string name="customer_list_header">KhataBook - Customer List</string>
     <string name="add_customer">Add Customer</string>
     <string name="sample_header">Sample Header</string>
+    <string name="default_web_client_id">YOUR_WEB_CLIENT_ID</string>
+
 </resources>

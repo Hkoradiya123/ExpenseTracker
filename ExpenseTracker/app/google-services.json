@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "238865753454",
+    "firebase_url": "https://android-app-25cd2-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "android-app-25cd2",
     "storage_bucket": "android-app-25cd2.firebasestorage.app"
   },
@@ -12,7 +13,20 @@
           "package_name": "com.example.expensetracker"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "238865753454-kme2mkncglo0q408u3ki4alsf8bln1pt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.expensetracker",
+            "certificate_hash": "5c27587e14c03f2abd4a7764af5defa4425fb8e4"
+          }
+        },
+        {
+          "client_id": "238865753454-17fu3f47grd6258qaittpda4cdngrjaj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAFIX5V5SzPA3jJ2DRqRWuUMI10Yidlxms"
@@ -20,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "238865753454-17fu3f47grd6258qaittpda4cdngrjaj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
