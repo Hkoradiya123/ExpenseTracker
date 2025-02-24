@@ -12,17 +12,16 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background="@drawable/button_style"
-        android:textColor="@color/white"
-        android:textSize="20sp"
+        android:textColor="@color/black"
+        android:textSize="25sp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/customerAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/button_style"
-        android:textColor="@color/white"
-        android:textColorLink="@color/white"
+        android:background="@drawable/edittext_border"
+        android:textColor="@color/black"
+        android:textColorLink="@color/black"
         android:textSize="20sp" />
 </LinearLayout>

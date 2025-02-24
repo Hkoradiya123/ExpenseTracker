@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="dialog_add_customer" parent="Theme.MaterialComponents.Light.Dialog.Alert">
         <item name="android:background">@android:color/white</item>
     </style>
+
     <style name="CustomAlertDialog" parent="Theme.MaterialComponents.Light.Dialog.Alert">
         <item name="android:background">@android:color/white</item>
     </style>
 
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+
+    </style>
 </resources>
