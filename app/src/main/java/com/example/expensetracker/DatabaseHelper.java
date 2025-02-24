@@ -1,5 +1,7 @@
 package com.example.expensetracker;
 
+import static android.provider.Settings.Global.getString;
+
 import android.util.Log;
 
 import com.google.firebase.BuildConfig;
@@ -52,8 +54,8 @@ public class DatabaseHelper {
         customer.put("amount", amount);
 
         docRef.set(customer)
-                .addOnSuccessListener(aVoid -> Log.d("Firestore", "Customer added successfully!"))
-                .addOnFailureListener(e -> Log.e("Firestore", "Error adding customer", e));
+                .addOnSuccessListener(aVoid -> Log.d("Firestore", "Customer Added Successfully..."))
+                .addOnFailureListener(e -> Log.e("Firestore", "Error Adding Customer", e));
     }
     // Get customer amount by name
     public void getCustomerAmount(String name, FirestoreCallback<String> callback) {

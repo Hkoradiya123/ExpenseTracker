@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
-        <item android:title="Language"
+        <item android:title="@string/language"
             android:icon="@drawable/language_icon">
             <menu>
                 <group android:checkableBehavior="single">
                     <item
                         android:id="@+id/lang_english"
-                        android:title="English"
+                        android:title="@string/english"
                         android:icon="@drawable/english_icon"/>
                     <item
                         android:id="@+id/lang_hindi"
-                        android:title="Hindi"
+                        android:title="@string/hindi"
                         android:icon="@drawable/hindi_icon"/>
                     </group>
             </menu>
@@ -20,7 +20,7 @@
         <item
             android:id="@+id/nav_signout"
             android:icon="@drawable/sign_out"
-            android:title="Sign Out" />
+            android:title="@string/sign_out" />
     </group>
 
 </menu>

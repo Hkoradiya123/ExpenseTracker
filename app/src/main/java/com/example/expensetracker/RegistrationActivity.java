@@ -60,15 +60,15 @@ public class RegistrationActivity extends AppCompatActivity {
         String pass = mPass.getText().toString().trim();
 
         if (TextUtils.isEmpty(email)) {
-            mEmail.setError("Email is required");
+            mEmail.setError(getString(R.string.email_required));
             return;
         }
         if (TextUtils.isEmpty(pass)) {
-            mPass.setError("Password is required");
+            mPass.setError(getString(R.string.password_required));
             return;
         }
         if (pass.length() < 6) {
-            mPass.setError("Password must be at least 6 characters");
+            mPass.setError(getString(R.string.pass_long));
             return;
         }
 
@@ -78,7 +78,7 @@ public class RegistrationActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 progressBar.setVisibility(View.GONE);
                 if (task.isSuccessful()) {
-                    Toast.makeText(getApplicationContext(), "Registration Successful", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.registration_success), Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(getApplicationContext(), HomeDetailsActivity.class));
                     finish();
                 } else {

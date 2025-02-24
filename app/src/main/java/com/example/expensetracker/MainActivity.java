@@ -64,29 +64,29 @@ public class MainActivity extends AppCompatActivity {
             String email = mEmail.getText().toString().trim();
             String pass = mPass.getText().toString().trim();
             if (TextUtils.isEmpty(email)) {
-                mEmail.setError("Email required ...");
-                Toast.makeText(getApplicationContext(), "Email required ...", Toast.LENGTH_SHORT).show();
+                mEmail.setError(getString(R.string.email_required));
+                Toast.makeText(getApplicationContext(), getString(R.string.email_required), Toast.LENGTH_SHORT).show();
                 return;
             }
             if (TextUtils.isEmpty(pass)) {
-                mPass.setError("Password required ...");
-                Toast.makeText(getApplicationContext(), "Password required ...", Toast.LENGTH_SHORT).show();
+                mPass.setError(getString(R.string.password_required));
+                Toast.makeText(getApplicationContext(), getString(R.string.password_required), Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            mDialog.setMessage("Processing...");
+            mDialog.setMessage(getString(R.string.processing));
             mDialog.show();
 
             mAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     mDialog.dismiss();
-                    Toast.makeText(getApplicationContext(), "LogIn Successful...", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.login_success), Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), HomeDetailsActivity.class);
                     startActivity(intent);
                     finish(); // Close MainActivity after login
                 } else {
                     mDialog.dismiss();
-                    Toast.makeText(getApplicationContext(), "LogIn Failed...", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.login_failed), Toast.LENGTH_SHORT).show();
                 }
             });
         });

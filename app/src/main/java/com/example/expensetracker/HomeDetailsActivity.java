@@ -10,7 +10,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
@@ -18,14 +17,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
 import android.util.Log;
-
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.*;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,19 +57,19 @@ public class HomeDetailsActivity extends AppCompatActivity implements Navigation
         //toolbar
         setSupportActionBar(toolbar);
 
-        //navigationview
+        //navigation
         navigationView.bringToFront();
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
-        // Initialize Firestore
+        // Initialize Firestorm
         db = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (currentUser == null) {
-            Toast.makeText(this, "User not logged in!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.user_nlogin), Toast.LENGTH_SHORT).show();
             finish(); // Close activity if no user is logged in
             return;
         }
@@ -129,8 +125,8 @@ public class HomeDetailsActivity extends AppCompatActivity implements Navigation
                     adapter.notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error loading customers: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    Log.e("HomeDetailsActivity", "Error loading customers", e); // Log the error for debugging
+                    Toast.makeText(this, getString(R.string.error_adding_customer) + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.e("HomeDetailsActivity", "Error Adding Customer", e); // Log the error for debugging
                 });
     }
 
@@ -159,15 +155,15 @@ public class HomeDetailsActivity extends AppCompatActivity implements Navigation
                     }
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error loading customer amount", Toast.LENGTH_SHORT).show();
-                    Log.e("HomeDetailsActivity", "Error loading customer amount", e); // Log error details
+                    Toast.makeText(this, getString(R.string.error_loading_amount), Toast.LENGTH_SHORT).show();
+                    Log.e("HomeDetailsActivity", "Error Loading Amount", e); // Log error details
                 });
     }
 
 
     private void showAddCustomerDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Add New Customer");
+        builder.setTitle(getString(R.string.add_customer));
 
         View customLayout = getLayoutInflater().inflate(R.layout.dialog_add_customer, null);
         builder.setView(customLayout);
@@ -175,18 +171,18 @@ public class HomeDetailsActivity extends AppCompatActivity implements Navigation
         EditText nameInput = customLayout.findViewById(R.id.customerNameInput);
         EditText amountInput = customLayout.findViewById(R.id.customerAmountInput);
 
-        builder.setPositiveButton("Add", (dialog, which) -> {
+        builder.setPositiveButton(getString(R.string.add), (dialog, which) -> {
             String name = nameInput.getText().toString();
             String amount = amountInput.getText().toString();
 
             if (!name.isEmpty() && !amount.isEmpty()) {
                 addCustomer(name, amount);
             } else {
-                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.fill_up_fields), Toast.LENGTH_SHORT).show();
             }
         });
 
-        builder.setNegativeButton("Cancel", null);
+        builder.setNegativeButton(getString(R.string.cancel), null);
         builder.create().show();
     }
 
@@ -204,14 +200,14 @@ public class HomeDetailsActivity extends AppCompatActivity implements Navigation
                     adapter.notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error adding customer", Toast.LENGTH_SHORT).show();
-                    Log.e("HomeDetailsActivity", "Error adding customer", e); // Log the error for debugging
+                    Toast.makeText(this,getString(R.string.error_adding_customer), Toast.LENGTH_SHORT).show();
+                    Log.e("HomeDetailsActivity", "Error Adding Customer", e); // Log the error for debugging
                 });
     }
 
     private void showEditCustomerDialog(int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Edit Customer");
+        builder.setTitle(getString(R.string.edit_customer));
 
         View customLayout = getLayoutInflater().inflate(R.layout.dialog_edit_customer, null);
         builder.setView(customLayout);
@@ -233,18 +229,18 @@ public class HomeDetailsActivity extends AppCompatActivity implements Navigation
                     }
                 });
 
-        builder.setPositiveButton("Update", (dialog, which) -> {
+        builder.setPositiveButton(getString(R.string.update), (dialog, which) -> {
             String newName = nameInput.getText().toString();
             String newAmount = amountInput.getText().toString();
 
             if (!newName.isEmpty() && !newAmount.isEmpty()) {
                 updateCustomer(customerName, newName, newAmount);
             } else {
-                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.fill_up_fields), Toast.LENGTH_SHORT).show();
             }
         });
 
-        builder.setNegativeButton("Cancel", null);
+        builder.setNegativeButton(getString(R.string.cancel), null);
         builder.create().show();
     }
 
@@ -279,8 +275,8 @@ public class HomeDetailsActivity extends AppCompatActivity implements Navigation
                     }
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error updating customer", Toast.LENGTH_SHORT).show();
-                    Log.e("HomeDetailsActivity", "Error updating customer", e); // Log the error for debugging
+                    Toast.makeText(this, getString(R.string.error_updating_customer), Toast.LENGTH_SHORT).show();
+                    Log.e("HomeDetailsActivity", "Error Updating Customer", e); // Log the error for debugging
                 });
     }
 
@@ -288,11 +284,11 @@ public class HomeDetailsActivity extends AppCompatActivity implements Navigation
         String customerName = customers.get(position);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Delete Customer");
-        builder.setMessage("Are you sure you want to delete " + customerName + "?");
+        builder.setTitle(getString(R.string.delete_customer));
+        builder.setMessage(getString(R.string.are_you_sure_delete) + customerName + "?");
 
-        builder.setPositiveButton("Delete", (dialog, which) -> deleteCustomer(customerName));
-        builder.setNegativeButton("Cancel", null);
+        builder.setPositiveButton(getString(R.string.delete), (dialog, which) -> deleteCustomer(customerName));
+        builder.setNegativeButton(getString(R.string.cancel), null);
         builder.show();
     }
 
@@ -312,8 +308,8 @@ public class HomeDetailsActivity extends AppCompatActivity implements Navigation
                     }
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error deleting customer", Toast.LENGTH_SHORT).show();
-                    Log.e("HomeDetailsActivity", "Error deleting customer", e); // Log the error for debugging
+                    Toast.makeText(this, getString(R.string.error_deleting_customer), Toast.LENGTH_SHORT).show();
+                    Log.e("HomeDetailsActivity", "Error Deleting Customer", e); // Log the error for debugging
                 });
     }
 

@@ -1,8 +1,60 @@
 <resources>
-    <string name="app_name">ExpenseTracker</string>
+    <string name="app_name">Khata Book</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+
     <string name="customer_list_header">KhataBook - Customer List</string>
+
     <string name="add_customer">Add Customer</string>
-    <string name="sample_header">Sample Header</string>
+    <string name="add_new_customer">Add New Customer</string>
+    <string name="edit_customer">Edit Customer</string>
+    <string name="delete_customer">Delete Customer</string>
+
+    <string name="customer_details">Customer Details</string>
+    <string name="customer_name">Enter Customer Name</string>
+
+    <string name="customer_amount">Enter Amount</string>
+    <string name="user_nlogin">User not Logged In!</string>
+
+    <string name="error_adding_customer">Error adding customer </string>
+    <string name="error_loading_customers">Error loading customers</string>
+    <string name="error_updating_customer">Error updating customer</string>
+    <string name="error_loading_amount">Error loading customer amount </string>
+    <string name="error_deleting_customer">Error deleting customer</string>
+    <string name="are_you_sure_delete">Are you sure you want to delete </string>
+    <string name="customer_added">Customer added successfully!</string>
+    <string name="customer_updated">Customer updated successfully!</string>
+    <string name="customer_deleted">Customer deleted successfully!</string>
+    <string name="error_adding">Error adding customer</string>
+
+    <string name="language">Language</string>
+    <string name="english">English</string>
+    <string name="hindi">Hindi</string>
+
+    <string name="reg">Registration</string>
+    <string name="log_in">Log In</string>
+    <string name="login_success">LogIn Successful…</string>
+    <string name="login_failed">LogIn Failed…</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="email">Email:</string>
+    <string name="password">Password:</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="signup_reg">Dont Have an Account ? Sign up Here.</string>
+    <string name="signin_here">Already have an Account? Sign In Here.</string>
+    <string name="fill_up_fields">Please fill all fields.!</string>
+    <string name="email_required">Email required…</string>
+    <string name="password_required">Password required…</string>
+    <string name="processing">Processing…</string>
+    <string name="registration_success">Registration Successful…</string>
+
+    <string name="pass_long">Password must be at least 6 characters.</string>
+
+    <string name="add">Add</string>
+    <string name="cancel">Cancel</string>
+    <string name="update">Update</string>
+    <string name="delete">Delete</string>"
+
+
+
 </resources>

@@ -21,7 +21,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Log In"
+                android:text="@string/log_in"
                 android:textAppearance="?android:textAppearanceLarge"
                 android:textColor="@android:color/white" />
 
@@ -31,7 +31,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:background="@drawable/edittext_backgroud"
-                android:hint="Email:"
+                android:hint="@string/email"
                 android:padding="15dp"
                 android:textColor="@android:color/white"
                 android:textColorHint="@android:color/white" />
@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:background="@drawable/edittext_backgroud"
-                android:hint="Password:"
+                android:hint="@string/password"
                 android:padding="15dp"
                 android:textColor="@android:color/white"
                 android:textColorHint="@android:color/white" />
@@ -54,7 +54,7 @@
                 android:layout_margin="10dp"
                 android:background="@drawable/edittext_backgroud"
                 android:padding="15dp"
-                android:text="Log In"
+                android:text="@string/log_in"
                 android:textAppearance="?android:textAppearanceMedium"
                 android:textColor="@android:color/white" />
 
@@ -64,7 +64,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:padding="5dp"
-                android:text="Forgot Password?"
+                android:text="@string/forgot_password"
                 android:textColor="@android:color/white" />
 
             <TextView
@@ -73,7 +73,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:padding="5dp"
-                android:text="Dont Have an Account ? Sign up Here"
+                android:text="@string/signup_reg"
                 android:textColor="@android:color/white" />
         </LinearLayout>
 

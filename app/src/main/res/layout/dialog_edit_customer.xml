@@ -11,7 +11,7 @@
         android:layout_width="374dp"
         android:layout_height="64dp"
         android:background="@drawable/edittext_backgroud"
-        android:hint="Enter Customer Name"
+        android:hint="@string/customer_name"
         android:padding="10dp"
         android:textColor="@color/white" />
 
@@ -21,7 +21,7 @@
         android:layout_height="64dp"
         android:layout_marginTop="10dp"
         android:background="@drawable/edittext_backgroud"
-        android:hint="Enter Amount"
+        android:hint="@string/customer_amount"
         android:inputType="number"
         android:padding="10dp"
         android:textColor="@color/white" />
