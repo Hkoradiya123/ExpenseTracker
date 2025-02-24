@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/splashscreenbg"
     android:orientation="vertical"
     android:padding="16dp"
     tools:ignore="VisualLintBounds">
@@ -13,14 +14,14 @@
         android:id="@+id/headerText"
         android:layout_width="match_parent"
         android:layout_height="75dp"
-        android:background="@color/purple_500"
+        android:background="@drawable/edittext_backgroud"
+        android:elevation="4dp"
         android:gravity="center"
         android:padding="10dp"
         android:text="KhataBook - Customer List"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:elevation="4dp"
         tools:text="Sample Header" />
 
     <ListView
@@ -35,9 +36,9 @@
         android:id="@+id/addCustomerButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add Customer"
-        android:background="?attr/colorPrimary"
-        android:textColor="@android:color/white"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/button_style"
         android:padding="12dp"
-        android:layout_marginTop="10dp"/>
+        android:text="Add Customer"
+        android:textColor="@android:color/white" />
 </LinearLayout>

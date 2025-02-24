@@ -2,27 +2,27 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/splashscreenbg"
     android:orientation="vertical"
-    android:padding="20dp"
-    android:background="@color/white">
+    android:padding="20dp">
 
     <EditText
         android:id="@+id/customerNameInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="374dp"
+        android:layout_height="64dp"
+        android:background="@drawable/edittext_backgroud"
         android:hint="Enter Customer Name"
-        android:background="@drawable/edittext_border"
         android:padding="10dp"
-        android:textColor="@color/black"/>
+        android:textColor="@color/white" />
 
     <EditText
         android:id="@+id/customerAmountInput"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="374dp"
+        android:layout_height="64dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/edittext_backgroud"
         android:hint="Enter Amount"
-        android:background="@drawable/edittext_border"
-        android:padding="10dp"
-        android:textColor="@color/black"
         android:inputType="number"
-        android:layout_marginTop="10dp"/>
+        android:padding="10dp"
+        android:textColor="@color/white" />
 </LinearLayout>

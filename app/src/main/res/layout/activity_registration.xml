@@ -5,80 +5,77 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:background="@drawable/splashscreenbg"
     android:gravity="center"
-    android:background="@drawable/backgroud_color"
+    android:orientation="vertical"
     tools:context=".RegistrationActivity">
 
     <ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Registration"
-                android:textColor="@android:color/white"
-                android:textAppearance="?android:textAppearanceLarge"
                 android:gravity="center"
-                />
+                android:text="Registration"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="@android:color/white" />
 
             <EditText
+                android:id="@+id/email_reg"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
+                android:background="@drawable/edittext_backgroud"
                 android:hint="Email:"
-                android:textColor="@android:color/white"
-                android:textColorHint="@android:color/white"
-                android:background="@drawable/edittext_backgroud"
                 android:padding="15dp"
-                android:id="@+id/email_reg"/>
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white" />
 
             <EditText
+                android:id="@+id/password_reg"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:hint="Password:"
-                android:textColor="@android:color/white"
-                android:textColorHint="@android:color/white"
                 android:background="@drawable/edittext_backgroud"
+                android:hint="Password:"
                 android:padding="15dp"
-                android:id="@+id/password_reg"
-                />
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white" />
 
             <Button
+                android:id="@+id/btn_reg"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:background="@drawable/edittext_backgroud"
-                android:text="Registration"
-                android:textColor="@android:color/white"
                 android:padding="15dp"
-                android:id="@+id/btn_reg"
+                android:text="Registration"
                 android:textAppearance="?android:textAppearanceMedium"
-                />
+                android:textColor="@android:color/white" />
 
             <TextView
+                android:id="@+id/signin_here"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textColor="@android:color/white"
-                android:id="@+id/signin_here"
-                android:text="Already have an Account? Sign In Here."
                 android:padding="5dp"
-                />
+                android:text="Already have an Account? Sign In Here."
+                android:textColor="@android:color/white" />
 
             <ProgressBar
                 android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
 
         </LinearLayout>
