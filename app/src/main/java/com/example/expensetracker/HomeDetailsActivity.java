@@ -1,5 +1,6 @@
 package com.example.expensetracker;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -111,6 +112,35 @@ public class HomeDetailsActivity extends AppCompatActivity implements Navigation
             super.onBackPressed();
         }
     }
+
+
+    //Localization...
+
+    //Localization...
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.lang_english) {
+            LocaleHelper.setLocale(HomeDetailsActivity.this, "en");
+            restartApp();
+        } else if (id == R.id.lang_hindi) {
+            LocaleHelper.setLocale(HomeDetailsActivity.this, "hi");
+            restartApp();
+        }
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    private void restartApp() {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
+    }
+
 
     private void loadCustomers() {
         String userId = currentUser.getUid();
@@ -313,8 +343,4 @@ public class HomeDetailsActivity extends AppCompatActivity implements Navigation
                 });
     }
 
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        return true;
-    }
 }
