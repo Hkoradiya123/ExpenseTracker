@@ -20,6 +20,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import android.util.Log;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.*;
@@ -190,32 +191,41 @@ public class HomeDetailsActivity extends AppCompatActivity implements Navigation
                 });
     }
 
-
     private void showAddCustomerDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(getString(R.string.add_customer));
 
+        // Inflate the custom layout
         View customLayout = getLayoutInflater().inflate(R.layout.dialog_add_customer, null);
         builder.setView(customLayout);
 
-        EditText nameInput = customLayout.findViewById(R.id.customerNameInput);
-        EditText amountInput = customLayout.findViewById(R.id.customerAmountInput);
+        // Find the input fields
+        TextInputEditText nameInput = customLayout.findViewById(R.id.customerNameInput);
+        TextInputEditText amountInput = customLayout.findViewById(R.id.customerAmountInput);
 
-        builder.setPositiveButton(getString(R.string.add), (dialog, which) -> {
+        // Create the dialog
+        AlertDialog dialog = builder.create();
+
+        // Set up the Submit button
+        Button submitButton = customLayout.findViewById(R.id.submitButton);
+        submitButton.setOnClickListener(v -> {
             String name = nameInput.getText().toString();
             String amount = amountInput.getText().toString();
 
             if (!name.isEmpty() && !amount.isEmpty()) {
                 addCustomer(name, amount);
+                dialog.dismiss(); // Close the dialog after adding the customer
             } else {
                 Toast.makeText(this, getString(R.string.fill_up_fields), Toast.LENGTH_SHORT).show();
             }
         });
 
-        builder.setNegativeButton(getString(R.string.cancel), null);
-        builder.create().show();
-    }
+        // Set up the Cancel button
+        Button cancelButton = customLayout.findViewById(R.id.cancelButton);
+        cancelButton.setOnClickListener(v -> dialog.dismiss()); // Close the dialog on cancel
 
+        // Show the dialog
+        dialog.show();
+    }
     private void addCustomer(String name, String amount) {
         String userId = currentUser.getUid();
 
@@ -237,18 +247,21 @@ public class HomeDetailsActivity extends AppCompatActivity implements Navigation
 
     private void showEditCustomerDialog(int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(getString(R.string.edit_customer));
 
+        // Inflate the custom layout
         View customLayout = getLayoutInflater().inflate(R.layout.dialog_edit_customer, null);
         builder.setView(customLayout);
 
-        EditText nameInput = customLayout.findViewById(R.id.customerNameInput);
-        EditText amountInput = customLayout.findViewById(R.id.customerAmountInput);
+        // Find the input fields
+        TextInputEditText nameInput = customLayout.findViewById(R.id.customerNameInput);
+        TextInputEditText amountInput = customLayout.findViewById(R.id.customerAmountInput);
 
+        // Get the current customer name
         String customerName = customers.get(position);
         nameInput.setText(customerName);
 
-        db.collection("users").document(currentUser.getUid()).collection("customers")
+        // Fetch the current amount from the database
+        db.collection("users").document(currentUser .getUid()).collection("customers")
                 .whereEqualTo("name", customerName)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -259,21 +272,30 @@ public class HomeDetailsActivity extends AppCompatActivity implements Navigation
                     }
                 });
 
-        builder.setPositiveButton(getString(R.string.update), (dialog, which) -> {
+        // Create the dialog
+        AlertDialog dialog = builder.create();
+
+        // Set up the Save button
+        Button saveButton = customLayout.findViewById(R.id.saveButton);
+        saveButton.setOnClickListener(v -> {
             String newName = nameInput.getText().toString();
             String newAmount = amountInput.getText().toString();
 
             if (!newName.isEmpty() && !newAmount.isEmpty()) {
                 updateCustomer(customerName, newName, newAmount);
+                dialog.dismiss(); // Close the dialog after updating
             } else {
                 Toast.makeText(this, getString(R.string.fill_up_fields), Toast.LENGTH_SHORT).show();
             }
         });
 
-        builder.setNegativeButton(getString(R.string.cancel), null);
-        builder.create().show();
-    }
+        // Set up the Cancel button
+        Button cancelButton = customLayout.findViewById(R.id.cancelButton);
+        cancelButton.setOnClickListener(v -> dialog.dismiss()); // Close the dialog on cancel
 
+        // Show the dialog
+        dialog.show();
+    }
     // Helper method to safely get the amount as a string
     private String getAmountAsString(DocumentSnapshot doc) {
         Object amountObj = doc.get("amount");
