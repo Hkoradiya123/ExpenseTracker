@@ -2,63 +2,61 @@ package com.example.expensetracker;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+
 public class MainActivity extends AppCompatActivity {
 
-    private EditText mEmail;
-    private EditText mPass;
+    private EditText mEmail, mPass;
     private Button btnLogin;
-    private TextView mSignupHere;
-    private TextView mForgotPassword;
-
+    private TextView mSignupHere, mForgotPassword;
     private ProgressDialog mDialog;
-
-    //firebase
     private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        loginDetails();
-        mAuth = FirebaseAuth.getInstance();
-        mDialog = new ProgressDialog(this);
+        mAuth = FirebaseAuth.getInstance(); // Initialize Firebase Authentication FIRST
+        loginDetails(); // Now call loginDetails()
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        if (isUserLoggedIn()) {
+            startActivity(new Intent(MainActivity.this, HomeDetailsActivity.class));
+            finish();
+        }
+    }
+
+    private boolean isUserLoggedIn() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        return prefs.getBoolean("isLoggedIn", false);
+    }
+
+    private void saveLoginStatus() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean("isLoggedIn", true);
+        editor.apply();
     }
 
     private void loginDetails() {
-
-        mEmail  = findViewById(R.id.email_login);
+        mEmail = findViewById(R.id.email_login);
         mPass = findViewById(R.id.password_login);
         btnLogin = findViewById(R.id.btn_login);
         mSignupHere = findViewById(R.id.signup_reg);
         mForgotPassword = findViewById(R.id.forgot_password);
+
+        mDialog = new ProgressDialog(this);
 
         btnLogin.setOnClickListener(v -> {
             String email = mEmail.getText().toString().trim();
@@ -78,14 +76,13 @@ public class MainActivity extends AppCompatActivity {
             mDialog.show();
 
             mAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(task -> {
+                mDialog.dismiss();
                 if (task.isSuccessful()) {
-                    mDialog.dismiss();
+                    saveLoginStatus(); // Save only on successful login
                     Toast.makeText(getApplicationContext(), getString(R.string.login_success), Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(getApplicationContext(), HomeDetailsActivity.class);
-                    startActivity(intent);
+                    startActivity(new Intent(getApplicationContext(), HomeDetailsActivity.class));
                     finish(); // Close MainActivity after login
                 } else {
-                    mDialog.dismiss();
                     Toast.makeText(getApplicationContext(), getString(R.string.login_failed), Toast.LENGTH_SHORT).show();
                 }
             });
