@@ -1,5 +1,7 @@
 package com.example.expensetracker;
 
+import static com.google.firebase.auth.FirebaseUser.*;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -7,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +40,8 @@ public class HomeDetailsActivity extends AppCompatActivity implements Navigation
 
     FirebaseUser currentUser;
 
+    FirebaseAuth mAuth;
+
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     Toolbar toolbar;
@@ -69,6 +72,7 @@ public class HomeDetailsActivity extends AppCompatActivity implements Navigation
         // Initialize Firestorm
         db = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        mAuth = FirebaseAuth.getInstance();
 
         if (currentUser == null) {
             Toast.makeText(this, getString(R.string.user_nlogin), Toast.LENGTH_SHORT).show();
@@ -128,11 +132,19 @@ public class HomeDetailsActivity extends AppCompatActivity implements Navigation
         } else if (id == R.id.lang_hindi) {
             LocaleHelper.setLocale(HomeDetailsActivity.this, "hi");
             restartApp();
+        }else if(id == R.id.nav_signout){
+            signOutUser();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void signOutUser() {
+        mAuth.signOut();
+        Toast.makeText(this, getString(R.string.sign_out_success), Toast.LENGTH_SHORT).show();
+        restartApp();
     }
 
     private void restartApp() {

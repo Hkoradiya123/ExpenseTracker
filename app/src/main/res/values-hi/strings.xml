@@ -47,14 +47,13 @@
     <string name="password_required">पासवर्ड की आवश्यकता…</string>
     <string name="processing">प्रसंस्करण…</string>
     <string name="registration_success">सफल पंजीकरण…</string>
-
+    <string name="sign_out_success">सफलतापूर्वक साइन आउट किया …!</string>
     <string name="pass_long">पासवर्ड कम से कम 6 अंकों का होना चाहिए।</string>
 
     <string name="add">जोड़ना</string>
     <string name="cancel">रद्द करना</string>
     <string name="update">अद्यतन</string>
     <string name="delete">मिटाना</string>"
-
 
 
 

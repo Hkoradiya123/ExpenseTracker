@@ -47,6 +47,7 @@
     <string name="password_required">Password required…</string>
     <string name="processing">Processing…</string>
     <string name="registration_success">Registration Successful…</string>
+    <string name="sign_out_success">Signed out successfully…!</string>"
 
     <string name="pass_long">Password must be at least 6 characters.</string>
 
