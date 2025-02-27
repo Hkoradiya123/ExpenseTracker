@@ -56,6 +56,11 @@
     <string name="update">Update</string>
     <string name="delete">Delete</string>"
 
+    <string name="google_login">Sign in with Google</string>
+    <string name="guest_login">Continue as Guest</string>
+    <string name="default_web_client_id" translatable="false">YOUR_CLIENT_ID.apps.googleusercontent.com</string>
+
+
 
 
 </resources>

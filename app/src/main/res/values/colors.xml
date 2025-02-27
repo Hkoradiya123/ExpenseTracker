@@ -20,4 +20,10 @@
 
     <!-- Button Colors -->
     <color name="buttonGray">#B0B0B0</color>
+
+    <color name="backgroundColor">#F5F5F5</color>
+    <color name="dividerColor">#BDBDBD</color>
+    <color name="buttonTextColor">#FFFFFF</color>
+    <color name="navigationDrawerBackground">#FFFFFF</color>
+    <color name="navigationTextColor">#212121</color>
 </resources>

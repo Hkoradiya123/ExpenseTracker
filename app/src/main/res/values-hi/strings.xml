@@ -55,6 +55,8 @@
     <string name="update">अद्यतन</string>
     <string name="delete">मिटाना</string>"
 
+    <string name="google_login">Google से साइन इन करें</string>
+    <string name="guest_login">मेहमान के रूप में जारी रखें</string>
 
 
 </resources>

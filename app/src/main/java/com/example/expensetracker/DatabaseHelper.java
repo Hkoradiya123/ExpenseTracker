@@ -1,15 +1,14 @@
 package com.example.expensetracker;
 
-import static android.provider.Settings.Global.getString;
-
 import android.util.Log;
 
-import com.google.firebase.BuildConfig;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,47 +19,59 @@ public class DatabaseHelper {
     private static final String COLLECTION_CUSTOMERS = "customers";
     private static final String FIELD_NAME = "name";
     private static final String FIELD_AMOUNT = "amount";
+
     private FirebaseFirestore db;
-    private String userId;
+    private FirebaseUser currentUser;
 
     public DatabaseHelper() {
         db = FirebaseFirestore.getInstance();
-        userId = FirebaseAuth.getInstance().getCurrentUser() != null ?
-                FirebaseAuth.getInstance().getCurrentUser().getUid() : null;
-        FirebaseFirestore db;
-
-        if (BuildConfig.DEBUG) {
-            db = FirebaseFirestore.getInstance();
-            db.useEmulator("10.0.2.2", 8080);  // Use this for Android Emulator
-        } else {
-            db = FirebaseFirestore.getInstance(); // Use Firestore normally in production
-        }
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
     }
 
+    // Get reference to user's Firestore collection
     private CollectionReference getUserCollection() {
-        return db.collection(COLLECTION_USERS).document(userId).collection(COLLECTION_CUSTOMERS);
+        if (currentUser == null) return null;
+        return db.collection(COLLECTION_USERS)
+                .document(currentUser.getUid())
+                .collection(COLLECTION_CUSTOMERS);
     }
 
-    // Add customer to Firestore
+    // Store Google User in Firestore
+    public void saveGoogleUser(FirebaseUser user) {
+        if (user == null) return;
 
-    public void addCustomerToFirestore(String userId, String name, String amount) {
-        DocumentReference docRef = db.collection("users")
-                .document(userId)
-                .collection("customers")
-                .document(name); // Use customer name as document ID
+        DocumentReference userRef = db.collection(COLLECTION_USERS).document(user.getUid());
+
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("name", user.getDisplayName());
+        userData.put("email", user.getEmail());
+
+        userRef.set(userData)
+                .addOnSuccessListener(aVoid -> Log.d("Firestore", "Google User Added"))
+                .addOnFailureListener(e -> Log.e("Firestore", "Failed to Add Google User", e));
+    }
+
+    // Add Customer to Firestore
+    public void addCustomer(String name, String amount) {
+        CollectionReference userCollection = getUserCollection();
+        if (userCollection == null) return;
 
         Map<String, Object> customer = new HashMap<>();
-        customer.put("name", name);
-        customer.put("amount", amount);
+        customer.put(FIELD_NAME, name);
+        customer.put(FIELD_AMOUNT, amount);
 
-        docRef.set(customer)
-                .addOnSuccessListener(aVoid -> Log.d("Firestore", "Customer Added Successfully..."))
+        userCollection.document(name) // Customer name as document ID
+                .set(customer)
+                .addOnSuccessListener(aVoid -> Log.d("Firestore", "Customer Added"))
                 .addOnFailureListener(e -> Log.e("Firestore", "Error Adding Customer", e));
     }
-    // Get customer amount by name
+
+    // Get Customer Amount by Name
     public void getCustomerAmount(String name, FirestoreCallback<String> callback) {
-        if (userId == null) return;
-        getUserCollection().whereEqualTo(FIELD_NAME, name).get()
+        CollectionReference userCollection = getUserCollection();
+        if (userCollection == null) return;
+
+        userCollection.whereEqualTo(FIELD_NAME, name).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     String amount = "0";
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
@@ -71,10 +82,12 @@ public class DatabaseHelper {
                 });
     }
 
-    // Retrieve all customer names
+    // Retrieve All Customers
     public void getAllCustomers(FirestoreCallback<ArrayList<String>> callback) {
-        if (userId == null) return;
-        getUserCollection().get()
+        CollectionReference userCollection = getUserCollection();
+        if (userCollection == null) return;
+
+        userCollection.get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     ArrayList<String> customers = new ArrayList<>();
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
@@ -84,10 +97,12 @@ public class DatabaseHelper {
                 });
     }
 
-    // Update customer details
+    // Update Customer Data
     public void updateCustomer(String oldName, String newName, String newAmount) {
-        if (userId == null) return;
-        getUserCollection().whereEqualTo(FIELD_NAME, oldName).get()
+        CollectionReference userCollection = getUserCollection();
+        if (userCollection == null) return;
+
+        userCollection.whereEqualTo(FIELD_NAME, oldName).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         doc.getReference().update(FIELD_NAME, newName, FIELD_AMOUNT, newAmount);
@@ -95,10 +110,12 @@ public class DatabaseHelper {
                 });
     }
 
-    // Delete customer by name
+    // Delete Customer
     public void deleteCustomer(String name) {
-        if (userId == null) return;
-        getUserCollection().whereEqualTo(FIELD_NAME, name).get()
+        CollectionReference userCollection = getUserCollection();
+        if (userCollection == null) return;
+
+        userCollection.whereEqualTo(FIELD_NAME, name).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
                         doc.getReference().delete();
@@ -106,7 +123,7 @@ public class DatabaseHelper {
                 });
     }
 
-    // Callback interface for Firestore async operations
+    // Callback Interface for Async Operations
     public interface FirestoreCallback<T> {
         void onCallback(T result);
     }

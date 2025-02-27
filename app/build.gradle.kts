@@ -57,6 +57,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:32.7.0")) // Firebase BOM
     implementation("com.google.firebase:firebase-firestore") // Firestore
     implementation("com.google.firebase:firebase-auth") // Firebase Authentication
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
 
     // TODO: Add the dependencies for Firebase products you want to use
     // When using the BoM, don't specify versions in Firebase dependencies
